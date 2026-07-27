@@ -159,46 +159,92 @@ class CryptoTicker extends PanelMenu.Button {
             const coinId = this.coins[i];
             const item = data.find(d => d.id.toLowerCase() === coinId.toLowerCase());
 
-            let text, color;
+            // ========== Symbol ==========
+            let symbolText = coinId.toUpperCase();
+            let symbolColor = '#7fdbff'; // cyan đẹp
 
-            if (!item) {
-                text = `${coinId.toUpperCase()}: unknown`;
-                color = '#ffffff';
-            } else {
-                const price = item.current_price;
-                const change = item.price_change_percentage_24h;
-                const changeStr = (change == null)
-                    ? 'unknown'
-                    : `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
-
-                text = `${item.symbol.toUpperCase()}: $${Number(price).toLocaleString(undefined, {maximumFractionDigits: 8})} (${changeStr})`;
-
-                if (change == null) color = '#ffffff';
-                else if (change > 0) color = '#2ecc71';
-                else if (change < 0) color = '#e74c3c';
-                else color = '#f1c40f';
+            if (item) {
+                symbolText = item.symbol.toUpperCase();
             }
 
-            const lbl = new St.Label({
-                text: text,
+            // Màu riêng cho một số coin phổ biến (tuỳ chọn)
+            if (symbolText === 'BTC') symbolColor = '#f7931a';      // Bitcoin cam
+            else if (symbolText === 'ETH') symbolColor = '#627eea'; // Ethereum xanh tím
+            else if (symbolText === 'USDT') symbolColor = '#26a17b'; // Tether xanh
+            else if (symbolText === 'SOL') symbolColor = '#9945ff';  // Solana tím
+            else if (symbolText === 'BNB') symbolColor = '#f3ba2f';  // BNB vàng
+            else if (symbolText === 'DOGE') symbolColor = '#f3ba2f';  // Dogecoin vàng
+
+            const symbolLbl = new St.Label({
+                text: symbolText + ': ',
                 y_align: Clutter.ActorAlign.CENTER,
             });
-            lbl.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
-            lbl.set_style(`color: ${color}; font-weight: 600; margin-right: 8px;`);
-            this.marquee.add_child(lbl);
+            symbolLbl.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
+            symbolLbl.set_style(`color: ${symbolColor}; font-weight: 700;`);
+            this.marquee.add_child(symbolLbl);
 
+            // ========== Price ==========
+            let priceText = 'unknown';
+            if (item && item.current_price != null) {
+                const price = Number(item.current_price);
+
+                if (price < 1) {
+                    // Giá < 1$ → cắt (truncate) còn 2 chữ số thập phân, không làm tròn
+                    const truncated = Math.floor(price * 100) / 100;
+                    priceText = '$' + truncated.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    });
+                } else {
+                    // Giá >= 1$ → bỏ hết phần thập phân
+                    const integerPrice = Math.floor(price);
+                    priceText = '$' + integerPrice.toLocaleString(undefined);
+                }
+            }
+
+            const priceLbl = new St.Label({
+                text: priceText,
+                y_align: Clutter.ActorAlign.CENTER,
+            });
+            priceLbl.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
+            priceLbl.set_style('color: #e8e8e8; font-weight: 600;'); // trắng sáng
+            this.marquee.add_child(priceLbl);
+
+            // ========== % Change (bỏ qua nếu là USDT) ==========
+            if (symbolText !== 'USDT' && item) {
+                const change = item.price_change_percentage_24h;
+                let changeStr = 'unknown';
+                let changeColor = '#aaaaaa';
+
+                if (change != null) {
+                    changeStr = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
+
+                    if (change > 0) changeColor = '#2ecc71';       // xanh lá
+                    else if (change < 0) changeColor = '#e74c3c';  // đỏ
+                    else changeColor = '#f1c40f';                  // vàng
+                }
+
+                const changeLbl = new St.Label({
+                    text: ` (${changeStr})`,
+                    y_align: Clutter.ActorAlign.CENTER,
+                });
+                changeLbl.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
+                changeLbl.set_style(`color: ${changeColor}; font-weight: 600;`);
+                this.marquee.add_child(changeLbl);
+            }
+
+            // ========== Separator ==========
             if (i < this.coins.length - 1) {
                 const sep = new St.Label({
-                    text: '  |  ',
+                    text: '   |   ',
                     y_align: Clutter.ActorAlign.CENTER,
                 });
                 sep.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
-                sep.set_style('color: #ffffff;');
+                sep.set_style('color: #666666;');
                 this.marquee.add_child(sep);
             }
         }
 
-        // Bắt đầu chạy chữ
         this._startMarquee();
     }
 
