@@ -1,26 +1,7 @@
-/* stylesheet.css - optional, extension uses inline styles for reliability */
 .moving-container {
-  width: 100%;
-  overflow: hidden;
-  background-color: transparent;
-  white-space: nowrap;
+    overflow: hidden;
 }
 
 .moving-text {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 600;
-  /* animation: moveRight linear infinite; */
+    /* không cần animation CSS */
 }
-
-/* Keyframes for CSS-based marquee if loaded by theme */
-@keyframes moveRight {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100vw); }
-}
-
-/* Color classes (fallback if stylesheet is loaded) */
-.crypto-up { color: #2ecc71; }
-.crypto-down { color: #e74c3c; }
-.crypto-same { color: #f1c40f; }
-.crypto-unknown { color: #ffffff; }
