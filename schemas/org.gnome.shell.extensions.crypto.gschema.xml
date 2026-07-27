@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.crypto" path="/org/gnome/shell/extensions/crypto/">
+    <key name="refresh-interval" type="i">
+      <default>300</default>
+      <summary>Refresh interval in seconds</summary>
+      <description>How often to refresh prices (seconds)</description>
+    </key>
+
+    <key name="coins" type="s">
+      <default>"bitcoin,ethereum,tether"</default>
+      <summary>Comma separated coin ids</summary>
+      <description>CoinGecko coin ids to show, comma separated (e.g., bitcoin,ethereum)</description>
+    </key>
+
+    <key name="currency" type="s">
+      <default>"usd"</default>
+      <summary>Fiat currency</summary>
+      <description>Display prices in this fiat currency (e.g., usd, eur)</description>
+    </key>
+  </schema>
+</schemalist>

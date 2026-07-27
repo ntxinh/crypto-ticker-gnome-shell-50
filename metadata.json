@@ -1,0 +1,8 @@
+{
+  "uuid": "crypto-ticker@ntxinh",
+  "name": "Crypto Ticker",
+  "description": "Show moving crypto prices in the top bar with color by 24h change",
+  "shell-version": ["3.36", "3.38", "40", "41", "42", "43", "44", "45", "50"],
+  "version": 1,
+  "settings-schema": "org.gnome.shell.extensions.crypto"
+}
