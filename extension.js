@@ -307,6 +307,12 @@ class CryptoTicker extends PanelMenu.Button {
 
 export default class CryptoTickerExtension extends Extension {
     enable() {
+        // Xóa indicator cũ nếu còn sót
+        if (Main.panel.statusArea[this.uuid]) {
+            Main.panel.statusArea[this.uuid].destroy();
+            delete Main.panel.statusArea[this.uuid];
+        }
+
         this._indicator = new CryptoTicker(this);
         Main.panel.addToStatusArea(this.uuid, this._indicator, 1, 'right');
     }
