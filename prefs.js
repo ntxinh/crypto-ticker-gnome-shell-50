@@ -80,5 +80,20 @@ export default class CryptoTickerPreferences extends ExtensionPreferences {
         });
         group.add(currencyRow);
         group.add(currencyHint);
+
+        // === Panel position ===
+        const positionOptions = ['left', 'center', 'right'];
+        const positionRow = new Adw.ComboRow({
+            title: _('Panel position'),
+            subtitle: _('Where to show the ticker in the top bar'),
+            model: new Gtk.StringList({
+                strings: [_('Left'), _('Center'), _('Right')],
+            }),
+            selected: Math.max(0, positionOptions.indexOf(settings.get_string('panel-position'))),
+        });
+        positionRow.connect('notify::selected', () => {
+            settings.set_string('panel-position', positionOptions[positionRow.selected]);
+        });
+        group.add(positionRow);
     }
 }

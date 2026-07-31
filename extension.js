@@ -48,9 +48,23 @@ class CryptoTicker extends PanelMenu.Button {
         this._applySettings();
         this._refresh();
 
-        this._settingsChangedId = this.settings.connect('changed', () => {
-            this._applySettings();
+        this._settingsChangedId = this.settings.connect('changed', (settings, key) => {
+            if (key === 'panel-position') {
+                this._reposition();
+            } else {
+                this._applySettings();
+            }
         });
+    }
+
+    _reposition() {
+        this.get_parent()?.remove_child(this);
+        Main.panel.addToStatusArea(
+            this._extension.uuid,
+            this,
+            0,
+            this.settings.get_string('panel-position') || 'right'
+        );
     }
 
     _applySettings() {
@@ -314,7 +328,12 @@ export default class CryptoTickerExtension extends Extension {
         }
 
         this._indicator = new CryptoTicker(this);
-        Main.panel.addToStatusArea(this.uuid, this._indicator, 1, 'right');
+        Main.panel.addToStatusArea(
+            this.uuid,
+            this._indicator,
+            0,
+            this._indicator.settings.get_string('panel-position') || 'right'
+        );
     }
 
     disable() {

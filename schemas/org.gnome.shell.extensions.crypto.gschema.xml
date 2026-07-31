@@ -18,5 +18,11 @@
       <summary>Fiat currency</summary>
       <description>Display prices in this fiat currency (e.g., usd, eur)</description>
     </key>
+
+    <key name="panel-position" type="s">
+      <default>'right'</default>
+      <summary>Panel position</summary>
+      <description>Which box of the top panel to place the ticker in (left, center or right)</description>
+    </key>
   </schema>
 </schemalist>
