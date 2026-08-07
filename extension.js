@@ -61,6 +61,12 @@ class CryptoTicker extends PanelMenu.Button {
         });
     }
 
+    _positionIndex() {
+        // The left box starts with the Activities button at index 0;
+        // place the ticker right after it instead of at the far-left edge.
+        return this.settings.get_string('panel-position') === 'left' ? 1 : 0;
+    }
+
     _reposition() {
         // addToStatusArea throws if the role is already registered, so unregister
         // it first; _addToPanelBox reparents the container into the new box.
@@ -68,7 +74,7 @@ class CryptoTicker extends PanelMenu.Button {
         Main.panel.addToStatusArea(
             this._extension.uuid,
             this,
-            0,
+            this._positionIndex(),
             this.settings.get_string('panel-position') || 'right'
         );
     }
@@ -337,7 +343,7 @@ export default class CryptoTickerExtension extends Extension {
         Main.panel.addToStatusArea(
             this.uuid,
             this._indicator,
-            0,
+            this._indicator._positionIndex(),
             this._indicator.settings.get_string('panel-position') || 'right'
         );
     }

@@ -53,6 +53,7 @@ Tell me which enhancement you prefer and I’ll provide the updated code.
 journalctl -f -o cat /usr/bin/gnome-shell
 
 sudo dnf install -y mutter-devkit
+dbus-run-session gnome-shell --devkit --wayland
 gnome-extensions disable crypto-ticker@yourname
 gnome-extensions enable crypto-ticker@yourname
 ```
