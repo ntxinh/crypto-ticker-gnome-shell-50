@@ -22,21 +22,25 @@ class CryptoTicker extends PanelMenu.Button {
         this._extension = extension;
         this.settings = extension.getSettings(SETTINGS_SCHEMA);
 
-        // Container bị cắt cứng
-        this.container = new St.BoxLayout({
+        // Content box with hard clip. Lives INSIDE this.container (the shell's
+        // own St.Bin wrapping the button) so we don't clobber PanelMenu.Button's
+        // `container` property — clobbering it orphans the St.Bin, which later
+        // gets finalized by GC and destroys the button mid-sweep, leaking the
+        // old indicator into the panel and duplicating the ticker.
+        this.tickerBox = new St.BoxLayout({
             style_class: 'moving-container',
             x_expand: false,
             x_align: Clutter.ActorAlign.START,
         });
-        this.container.set_width(280);               // độ rộng hiển thị
-        this.container.clip_to_allocation = true;    // bắt buộc phải có
-        this.add_child(this.container);
+        this.tickerBox.set_width(280);               // độ rộng hiển thị
+        this.tickerBox.clip_to_allocation = true;    // bắt buộc phải có
+        this.add_child(this.tickerBox);
 
         this.marquee = new St.BoxLayout({
             style_class: 'moving-text',
             vertical: false,
         });
-        this.container.add_child(this.marquee);
+        this.tickerBox.add_child(this.marquee);
 
         this._session = new Soup.Session();
 
@@ -58,7 +62,9 @@ class CryptoTicker extends PanelMenu.Button {
     }
 
     _reposition() {
-        this.get_parent()?.remove_child(this);
+        // addToStatusArea throws if the role is already registered, so unregister
+        // it first; _addToPanelBox reparents the container into the new box.
+        delete Main.panel.statusArea[this._extension.uuid];
         Main.panel.addToStatusArea(
             this._extension.uuid,
             this,
@@ -267,7 +273,7 @@ class CryptoTicker extends PanelMenu.Button {
 
         // Đợi layout xong rồi mới đo kích thước
         GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-            const containerWidth = this.container.width;
+            const containerWidth = this.tickerBox.width;
             const textWidth = this.marquee.width;
 
             // Chỉ chạy nếu text dài hơn container
